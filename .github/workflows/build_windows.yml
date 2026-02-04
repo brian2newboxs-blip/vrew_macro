@@ -1,4 +1,4 @@
-name: Build macOS App
+name: Build Windows App
 
 on:
   push:
@@ -7,14 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-13
-            arch: Intel
-          - os: macos-14
-            arch: Silicon
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -27,15 +20,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if (Test-Path requirements.txt) { pip install -r requirements.txt }
         pip install pyinstaller
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --noconsole --onefile --name "Vrew_Macro_${{ matrix.arch }}" --windowed vrew_macro.py
+        pyinstaller --noconsole --onefile --name "Vrew_Macro" --windowed vrew_macro.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Vrew_Macro_macOS_${{ matrix.arch }}
-        path: dist/Vrew_Macro_${{ matrix.arch }}.app
+        name: Vrew_Macro_Windows
+        path: dist/Vrew_Macro.exe

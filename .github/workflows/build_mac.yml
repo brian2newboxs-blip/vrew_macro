@@ -11,10 +11,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-13
-            arch: Intel
-          - os: macos-14
+          - os: macos-latest
             arch: Silicon
+          - os: macos-15
+            arch: Intel
+
 
     steps:
     - uses: actions/checkout@v4

@@ -7,8 +7,13 @@ import pyperclip
 import platform
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QTextEdit, QPushButton, QLineEdit, QMessageBox, QFrame)
-from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, pyqtSignal, QObject, QUrl
+from PyQt5.QtGui import QFont, QDesktopServices
+
+try:
+    import ApplicationServices
+except ImportError:
+    ApplicationServices = None
 
 class WorkerSignals(QObject):
     update_status = pyqtSignal(str)
@@ -70,6 +75,23 @@ class VrewMacroApp(QWidget):
         row2.addWidget(QLabel("(기본 0.2, 컴퓨터가 느리면 늘리세요)"))
         row2.addStretch()
         layout.addLayout(row2)
+
+        # 4.5 Permission Buttons
+        perm_layout = QHBoxLayout()
+        perm_layout.addStretch()
+        
+        self.btn_access = QPushButton("손쉬운 사용 설정")
+        self.btn_access.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")))
+        self.btn_access.setStyleSheet("font-size: 11px; color: gray;")
+        perm_layout.addWidget(self.btn_access)
+
+        self.btn_monitor = QPushButton("입력 모니터링 설정")
+        self.btn_monitor.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")))
+        self.btn_monitor.setStyleSheet("font-size: 11px; color: gray;")
+        perm_layout.addWidget(self.btn_monitor)
+        
+        perm_layout.addStretch()
+        layout.addLayout(perm_layout)
 
         # 5. Start Button
         self.btn = QPushButton('매크로 실행 (Start)')
@@ -143,7 +165,12 @@ class VrewMacroApp(QWidget):
             for k, text in data.items():
                 if not text: continue
                 pyperclip.copy(text)
-                pyautogui.hotkey(mod_key, 'v')
+                # Robust Paste Logic
+                pyautogui.keyDown(mod_key)
+                time.sleep(0.2)  # Wait for modifier to be registered
+                pyautogui.press('v')
+                time.sleep(0.2)
+                pyautogui.keyUp(mod_key)
                 time.sleep(delay)
                 pyautogui.press(next_key)
                 time.sleep(delay)
@@ -156,6 +183,7 @@ class VrewMacroApp(QWidget):
 
         except Exception as e:
             signals.error.emit(str(e))
+
 
 if __name__ == '__main__':
     pyautogui.FAILSAFE = True

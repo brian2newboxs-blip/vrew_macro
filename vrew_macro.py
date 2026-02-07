@@ -44,10 +44,10 @@ class VrewMacroApp:
         self.row2_frame.pack(side=tk.TOP, fill=tk.X, pady=2)
 
         tk.Label(self.row2_frame, text="입력 딜레이(초):").pack(side=tk.LEFT)
-        self.delay_var = tk.StringVar(value="0.1")
+        self.delay_var = tk.StringVar(value="0.2")
         self.delay_entry = tk.Entry(self.row2_frame, textvariable=self.delay_var, width=10)
         self.delay_entry.pack(side=tk.LEFT, padx=5)
-        tk.Label(self.row2_frame, text="(기본 0.1, 컴퓨터가 느리면 늘리세요)").pack(side=tk.LEFT)
+        tk.Label(self.row2_frame, text="(기본 0.2, 컴퓨터가 느리면 늘리세요)").pack(side=tk.LEFT)
 
         # 하단 버튼 프레임
         self.btn_frame = tk.Frame(root)
